@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全球临床试验跟踪雷达</title>
     <style>
+        /* 您的原始CSS样式保持不变 */
         body {
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
             margin: 0;
@@ -228,6 +229,29 @@
                 gap: 5px;
             }
         }
+        
+        .api-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .api-toggle button {
+            padding: 8px 15px;
+            border: none;
+            background-color: #eee;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .api-toggle button.active {
+            background-color: #3a7bd5;
+            color: white;
+        }
+        .api-toggle button:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+        .api-toggle button:last-child {
+            border-radius: 0 4px 4px 0;
+        }
     </style>
 </head>
 <body>
@@ -236,6 +260,11 @@
             <h1>全球临床试验跟踪雷达</h1>
             <p class="subtitle">实时追踪全球顶级医学期刊临床试验和行业进展</p>
         </header>
+
+        <div class="api-toggle">
+            <button class="active" data-mode="api">使用API</button>
+            <button data-mode="local">使用本地数据</button>
+        </div>
 
         <div class="controls">
             <button class="time-btn active" data-time="today">今天</button>
@@ -274,12 +303,32 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 配置Sheet2API接口
+            const API_CONFIG = {
+                // 这里替换为您获得的Sheet2API URLs
+                clinical_trials: 'https://sheet2api.com/v1/YOUR_API_KEY/clinical_trial_radar/clinical_trials',
+                industry_news: 'https://sheet2api.com/v1/YOUR_API_KEY/clinical_trial_radar/industry_news'
+            };
+            
+            // 当前数据模式: 'api' 或 'local'
+            let currentMode = 'api';
+            
             // 时间按钮切换
             const timeButtons = document.querySelectorAll('.time-btn');
             timeButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     timeButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
+                });
+            });
+
+            // API切换按钮
+            const apiToggleButtons = document.querySelectorAll('.api-toggle button');
+            apiToggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    apiToggleButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMode = this.getAttribute('data-mode');
                 });
             });
 
@@ -305,24 +354,250 @@
                 });
             });
 
-            // 临床试验数据
-            const clinicalTrialsData = {
-                today: [
-                    {
-                        title: "Selexipag用于肺动脉高压治疗的III期临床试验结果",
-                        journal: "New England Journal of Medicine",
-                        date: "2025-05-16",
-                        authors: "Johnson M, Zhang L, et al.",
-                        abstract: "Background: Pulmonary arterial hypertension (PAH) is a progressive disease characterized by increased pulmonary vascular resistance leading to right heart failure. Selexipag, an oral, selective IP prostacyclin receptor agonist, has shown promise in earlier trials. Methods: In this double-blind, placebo-controlled, phase 3 trial, we randomly assigned 1156 patients with PAH to receive selexipag or placebo. The primary end point was a composite of death from any cause or a complication related to PAH up to the end of the treatment period. Results: The primary end point occurred in 27.0% of patients in the selexipag group and in 41.6% in the placebo group (hazard ratio, 0.60; 95% confidence interval, 0.46 to 0.78; P<0.001). The most frequent adverse events were headache, diarrhea, and jaw pain. Conclusions: In patients with PAH, selexipag reduced the risk of the primary composite end point of death or complications related to PAH compared with placebo.",
-                        summary: "本研究是一项III期随机双盲对照试验，评估了口服前列环素受体激动剂Selexipag在肺动脉高压(PAH)患者中的疗效和安全性。研究纳入1156名PAH患者，随机分配接受Selexipag或安慰剂治疗。结果显示，Selexipag组的主要复合终点(全因死亡或PAH相关并发症)发生率为27.0%，而安慰剂组为41.6%(风险比0.60)，表明Selexipag显著降低了PAH患者的死亡和并发症风险。药物常见的不良反应包括头痛、腹泻和颌痛。这项研究为PAH患者提供了一种新的有效治疗选择。",
-                        source: "https://www.nejm.org/doi/full/10.1056/NEJMoa2505409"
-                    },
-                    {
-                        title: "CRISPR-Cas9基因编辑治疗镰状细胞病的最新临床数据",
-                        journal: "Science Translational Medicine",
-                        date: "2025-05-16",
-                        authors: "Chen R, Williams K, et al.",
-                        abstract: "Sickle cell disease (SCD) is a genetic disorder characterized by abnormal hemoglobin production leading to red blood cell sickling and vaso-occlusive crises. Here, we report updated results from our phase 1/2 clinical trial evaluating CRISPR-Cas9–mediated editing of BCL11A in autologous CD34+ hematopoietic stem and progenitor cells to induce fetal hemoglobin (HbF) expression in patients with SCD. The procedure involves isolating CD34+ cells from patients, editing the BCL11A enhancer ex vivo using CRISPR-Cas9, and reinfusing the cells after myeloablative conditioning. With a median follow-up of 36 months in 31 patients, we observed sustained engraftment of edited cells with HbF comprising an average of 42.3% of total hemoglobin. No vaso-occlusive crises were reported in 29 of 31 patients (93.5%) after engraftment. Adverse events were primarily related to myeloablative conditioning. These results demonstrate durable clinical benefit of CRISPR-Cas9 gene editing for SCD.",
-                        summary: "这项I/II期临床试验报告了使用CRISPR-Cas9基因编辑技术治疗镰状细胞病(SCD)的最新结果。研究通过编辑患者自身CD34+造血干细胞中的BCL11A增强子，诱导胎儿血红蛋白(HbF)表达。31名患者中位随访36个月后，编辑后的细胞显示持续植入，HbF平均占总血红蛋白的42.3%。治疗后93.5%的患者(31名中有29名)未再报告血管闭塞性危象。不良事件主要与清髓性预处理相关。这些结果表明CRISPR-Cas9基因编辑技术对SCD具有持久的临床益处，代表了基因治疗在遗传血液疾病中的重大进展。",
-                        source: "https://www.science.org/doi/10.1126/scitranslmed.adg9786"
-                    }
+            // 加载数据函数
+            function loadData() {
+                // 显示加载动画
+                document.querySelector('.loading').style.display = 'block';
+                document.querySelector('.no-results').style.display = 'none';
+                
+                // 清空现有数据
+                document.getElementById('clinical-trials').innerHTML = '';
+                document.getElementById('industry-news').innerHTML = '';
+                
+                // 获取当前选中的时间范围
+                const selectedTime = document.querySelector('.time-btn.active').getAttribute('data-time');
+                
+                // 计算日期过滤
+                const today = new Date();
+                let filterDate = new Date();
+                
+                switch(selectedTime) {
+                    case 'today':
+                        filterDate.setHours(0, 0, 0, 0); // 今天开始
+                        break;
+                    case 'week':
+                        filterDate.setDate(today.getDate() - 7); // 一周前
+                        break;
+                    case 'month':
+                        filterDate.setMonth(today.getMonth() - 1); // 一个月前
+                        break;
+                    case 'year':
+                        filterDate.setFullYear(today.getFullYear() - 1); // 一年前
+                        break;
+                }
+                
+                if (currentMode === 'api') {
+                    // 使用API数据
+                    // 获取临床试验数据
+                    fetch(API_CONFIG.clinical_trials)
+                        .then(response => response.json())
+                        .then(allTrials => {
+                            // 手动过滤日期
+                            const filteredTrials = allTrials.filter(trial => {
+                                const trialDate = new Date(trial.date);
+                                return trialDate >= filterDate && trialDate <= today;
+                            });
+                            
+                            loadTrialData(filteredTrials, 'clinical-trials');
+                            
+                            // 获取行业进展数据
+                            return fetch(API_CONFIG.industry_news);
+                        })
+                        .then(response => response.json())
+                        .then(allNews => {
+                            // 手动过滤日期
+                            const filteredNews = allNews.filter(news => {
+                                const newsDate = new Date(news.date);
+                                return newsDate >= filterDate && newsDate <= today;
+                            });
+                            
+                            loadNewsData(filteredNews, 'industry-news');
+                            
+                            // 隐藏加载动画
+                            document.querySelector('.loading').style.display = 'none';
+                            
+                            // 更新状态信息
+                            updateStatusMessage(selectedTime, 
+                                            document.querySelectorAll('#clinical-trials .card').length, 
+                                            document.querySelectorAll('#industry-news .card').length);
+                            
+                            if (document.querySelectorAll('#clinical-trials .card').length === 0 && 
+                                document.querySelectorAll('#industry-news .card').length === 0) {
+                                document.querySelector('.no-results').style.display = 'block';
+                            }
+                            
+                            setupAbstractToggle();
+                        })
+                        .catch(error => {
+                            console.error('API数据加载错误:', error);
+                            // 如果API加载失败，尝试使用本地数据
+                            document.querySelector('.status-message').textContent = 'API数据加载失败，已切换到本地数据';
+                            loadLocalData(selectedTime, filterDate, today);
+                        });
+                } else {
+                    // 使用本地数据
+                    loadLocalData(selectedTime, filterDate, today);
+                }
+            }
+            
+            // 使用本地JSON数据
+            function loadLocalData(selectedTime, filterDate, today) {
+                fetch('data.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        // 过滤临床试验数据
+                        const filteredTrials = data.clinical_trials.filter(trial => {
+                            const trialDate = new Date(trial.date);
+                            return trialDate >= filterDate && trialDate <= today;
+                        });
+                        
+                        loadTrialData(filteredTrials, 'clinical-trials');
+                        
+                        // 过滤行业进展数据
+                        const filteredNews = data.industry_news.filter(news => {
+                            const newsDate = new Date(news.date);
+                            return newsDate >= filterDate && newsDate <= today;
+                        });
+                        
+                        loadNewsData(filteredNews, 'industry-news');
+                        
+                        // 隐藏加载动画
+                        document.querySelector('.loading').style.display = 'none';
+                        
+                        // 更新状态信息
+                        updateStatusMessage(selectedTime, 
+                                        filteredTrials.length, 
+                                        filteredNews.length);
+                        
+                        if (filteredTrials.length === 0 && filteredNews.length === 0) {
+                            document.querySelector('.no-results').style.display = 'block';
+                        }
+                        
+                        setupAbstractToggle();
+                    })
+                    .catch(error => {
+                        console.error('本地数据加载错误:', error);
+                        document.querySelector('.loading').style.display = 'none';
+                        document.querySelector('.status-message').textContent = '数据加载失败，请稍后重试';
+                    });
+            }
+
+            // 加载临床试验数据
+            function loadTrialData(data, containerId) {
+                const container = document.getElementById(containerId);
+                
+                if (data.length === 0) {
+                    return;
+                }
+                
+                data.forEach(item => {
+                    // 处理categories，确保它是一个数组
+                    const categories = typeof item.categories === 'string' 
+                        ? item.categories.split(',').map(cat => cat.trim()) 
+                        : (Array.isArray(item.categories) ? item.categories : []);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    card.innerHTML = `
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="meta-info">
+                            <span class="journal">${item.journal}</span>
+                            <span class="date">${item.date}</span>
+                        </div>
+                        <div class="authors">${item.authors}</div>
+                        <div class="abstract-section">
+                            <h4>英文摘要</h4>
+                            <div class="abstract-content">${item.abstract}</div>
+                        </div>
+                        <div class="summary">
+                            <strong>中文摘要：</strong>${item.summary}
+                        </div>
+                        <a href="${item.source}" target="_blank" class="source-link">查看原文</a>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+
+            // 加载行业进展数据
+            function loadNewsData(data, containerId) {
+                const container = document.getElementById(containerId);
+                
+                if (data.length === 0) {
+                    return;
+                }
+                
+                data.forEach(item => {
+                    // 处理categories，确保它是一个数组
+                    const categories = typeof item.categories === 'string' 
+                        ? item.categories.split(',').map(cat => cat.trim()) 
+                        : (Array.isArray(item.categories) ? item.categories : []);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    card.innerHTML = `
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="meta-info">
+                            <span class="journal">${item.company || ''}</span>
+                            <span class="date">${item.date}</span>
+                        </div>
+                        <div class="abstract-section">
+                            <h4>英文简报</h4>
+                            <div class="abstract-content">${item.abstract}</div>
+                        </div>
+                        <div class="summary">
+                            <strong>中文摘要：</strong>${item.summary}
+                        </div>
+                        <a href="${item.source}" target="_blank" class="source-link">查看原文</a>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+
+            // 更新状态消息
+            function updateStatusMessage(time, trialsCount, newsCount) {
+                const timeText = {
+                    'today': '今天',
+                    'week': '本周',
+                    'month': '本月',
+                    'year': '本年度'
+                }[time];
+                
+                const modeText = currentMode === 'api' ? 'API' : '本地';
+                
+                let message = `显示${timeText}的`;
+                if (trialsCount > 0 && newsCount > 0) {
+                    message += `${trialsCount}条临床试验和${newsCount}条行业进展 (${modeText}数据)`;
+                } else if (trialsCount > 0) {
+                    message += `${trialsCount}条临床试验 (${modeText}数据)`;
+                } else if (newsCount > 0) {
+                    message += `${newsCount}条行业进展 (${modeText}数据)`;
+                } else {
+                    message += `结果 (无数据)`;
+                }
+                
+                document.querySelector('.status-message').textContent = message;
+            }
+
+            // 设置摘要折叠/展开功能
+            function setupAbstractToggle() {
+                const abstractHeaders = document.querySelectorAll('.abstract-section h4');
+                
+                abstractHeaders.forEach(header => {
+                    header.addEventListener('click', function() {
+                        this.classList.toggle('active');
+                        const content = this.nextElementSibling;
+                        content.classList.toggle('active');
+                    });
+                });
+            }
+
+            // 初始加载数据
+            loadData();
+        });
+    </script>
+</body>
+</html>
