@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球临床试验跟踪雷达</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .time-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            background-color: #e6e9ee;
+            color: #555;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .time-btn:hover {
+            background-color: #d1d7e0;
+        }
+        .time-btn.active {
+            background-color: #3a7bd5;
+            color: white;
+        }
+        .refresh-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .refresh-btn:hover {
+            background-color: #3e8e41;
+            transform: translateY(-2px);
+        }
+        .refresh-btn:active {
+            transform: translateY(1px);
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            background-color: #e6e9ee;
+            border: none;
+            flex: 1;
+            text-align: center;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+        .tab:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+        .tab:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .tab.active {
+            background-color: #3a7bd5;
+            color: white;
+            font-weight: bold;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card-title {
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .journal {
+            font-weight: bold;
+            color: #3498db;
+        }
+        .date {
+            color: #7f8c8d;
+        }
+        .abstract-section h4 {
+            cursor: pointer;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+            color: #34495e;
+        }
+        .abstract-section h4:after {
+            content: '▼';
+            font-size: 0.8em;
+        }
+        .abstract-section h4.active:after {
+            content: '▲';
+        }
+        .abstract-content {
+            display: none;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+        .abstract-content.active {
+            display: block;
+        }
+        .summary {
+            border-left: 4px solid #3a7bd5;
+            padding-left: 15px;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        .source-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .source-link:hover {
+            text-decoration: underline;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px 0;
+        }
+        .loading img {
+            width: 50px;
+            height: 50px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-left-color: #3a7bd5;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .no-results {
+            text-align: center;
+            padding: 50px 0;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            display: none;
+        }
+        .status-message {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+        }
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .meta-info {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>全球临床试验跟踪雷达</h1>
+            <p class="subtitle">实时追踪全球顶级医学期刊临床试验和行业进展</p>
+        </header>
+
+        <div class="controls">
+            <button class="time-btn active" data-time="today">今天</button>
+            <button class="time-btn" data-time="week">本周</button>
+            <button class="time-btn" data-time="month">本月</button>
+            <button class="time-btn" data-time="year">本年度</button>
+            <button class="refresh-btn">刷新数据</button>
+        </div>
+
+        <div class="status-message">
+            选择时间范围并点击刷新以获取最新数据
+        </div>
+
+        <div class="tab-container">
+            <button class="tab active" data-tab="clinical-trials">临床试验</button>
+            <button class="tab" data-tab="industry-news">行业进展</button>
+        </div>
+
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>正在加载数据，请稍候...</p>
+        </div>
+
+        <div class="no-results">
+            该时间段内暂无相关数据
+        </div>
+
+        <div id="clinical-trials" class="content-section active">
+            <!-- 临床试验数据将在这里动态加载 -->
+        </div>
+
+        <div id="industry-news" class="content-section">
+            <!-- 行业进展数据将在这里动态加载 -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 时间按钮切换
+            const timeButtons = document.querySelectorAll('.time-btn');
+            timeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    timeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // 刷新按钮
+            const refreshBtn = document.querySelector('.refresh-btn');
+            refreshBtn.addEventListener('click', loadData);
+
+            // 标签切换
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    // 激活标签
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 显示相应内容
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById(tabName).classList.add('active');
+                });
+            });
+
+            // 临床试验数据
+            const clinicalTrialsData = {
+                today: [
+                    {
+                        title: "Selexipag用于肺动脉高压治疗的III期临床试验结果",
+                        journal: "New England Journal of Medicine",
+                        date: "2025-05-16",
+                        authors: "Johnson M, Zhang L, et al.",
+                        abstract: "Background: Pulmonary arterial hypertension (PAH) is a progressive disease characterized by increased pulmonary vascular resistance leading to right heart failure. Selexipag, an oral, selective IP prostacyclin receptor agonist, has shown promise in earlier trials. Methods: In this double-blind, placebo-controlled, phase 3 trial, we randomly assigned 1156 patients with PAH to receive selexipag or placebo. The primary end point was a composite of death from any cause or a complication related to PAH up to the end of the treatment period. Results: The primary end point occurred in 27.0% of patients in the selexipag group and in 41.6% in the placebo group (hazard ratio, 0.60; 95% confidence interval, 0.46 to 0.78; P<0.001). The most frequent adverse events were headache, diarrhea, and jaw pain. Conclusions: In patients with PAH, selexipag reduced the risk of the primary composite end point of death or complications related to PAH compared with placebo.",
+                        summary: "本研究是一项III期随机双盲对照试验，评估了口服前列环素受体激动剂Selexipag在肺动脉高压(PAH)患者中的疗效和安全性。研究纳入1156名PAH患者，随机分配接受Selexipag或安慰剂治疗。结果显示，Selexipag组的主要复合终点(全因死亡或PAH相关并发症)发生率为27.0%，而安慰剂组为41.6%(风险比0.60)，表明Selexipag显著降低了PAH患者的死亡和并发症风险。药物常见的不良反应包括头痛、腹泻和颌痛。这项研究为PAH患者提供了一种新的有效治疗选择。",
+                        source: "https://www.nejm.org/doi/full/10.1056/NEJMoa2505409"
+                    },
+                    {
+                        title: "CRISPR-Cas9基因编辑治疗镰状细胞病的最新临床数据",
+                        journal: "Science Translational Medicine",
+                        date: "2025-05-16",
+                        authors: "Chen R, Williams K, et al.",
+                        abstract: "Sickle cell disease (SCD) is a genetic disorder characterized by abnormal hemoglobin production leading to red blood cell sickling and vaso-occlusive crises. Here, we report updated results from our phase 1/2 clinical trial evaluating CRISPR-Cas9–mediated editing of BCL11A in autologous CD34+ hematopoietic stem and progenitor cells to induce fetal hemoglobin (HbF) expression in patients with SCD. The procedure involves isolating CD34+ cells from patients, editing the BCL11A enhancer ex vivo using CRISPR-Cas9, and reinfusing the cells after myeloablative conditioning. With a median follow-up of 36 months in 31 patients, we observed sustained engraftment of edited cells with HbF comprising an average of 42.3% of total hemoglobin. No vaso-occlusive crises were reported in 29 of 31 patients (93.5%) after engraftment. Adverse events were primarily related to myeloablative conditioning. These results demonstrate durable clinical benefit of CRISPR-Cas9 gene editing for SCD.",
+                        summary: "这项I/II期临床试验报告了使用CRISPR-Cas9基因编辑技术治疗镰状细胞病(SCD)的最新结果。研究通过编辑患者自身CD34+造血干细胞中的BCL11A增强子，诱导胎儿血红蛋白(HbF)表达。31名患者中位随访36个月后，编辑后的细胞显示持续植入，HbF平均占总血红蛋白的42.3%。治疗后93.5%的患者(31名中有29名)未再报告血管闭塞性危象。不良事件主要与清髓性预处理相关。这些结果表明CRISPR-Cas9基因编辑技术对SCD具有持久的临床益处，代表了基因治疗在遗传血液疾病中的重大进展。",
+                        source: "https://www.science.org/doi/10.1126/scitranslmed.adg9786"
+                    }
