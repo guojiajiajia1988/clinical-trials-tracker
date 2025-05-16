@@ -1,0 +1,37 @@
+{
+  "clinical_trials": [
+    {
+      "title": "Selexipag用于肺动脉高压治疗的III期临床试验结果",
+      "journal": "New England Journal of Medicine",
+      "date": "2025-05-16",
+      "authors": "Johnson M, Zhang L, et al.",
+      "abstract": "Background: Pulmonary arterial hypertension (PAH)...",
+      "summary": "本研究是一项III期随机双盲对照试验...",
+      "source": "https://www.nejm.org/doi/full/10.1056/NEJMoa2505409",
+      "categories": "肺动脉高压,心血管疾病",
+      "phase": "III期"
+    },
+    {
+      "title": "CRISPR-Cas9基因编辑治疗镰状细胞病的最新临床数据",
+      "journal": "Science Translational Medicine",
+      "date": "2025-05-16",
+      "authors": "Chen R, Williams K, et al.",
+      "abstract": "Sickle cell disease (SCD) is a genetic disorder...",
+      "summary": "这项I/II期临床试验报告了使用CRISPR-Cas9...",
+      "source": "https://www.science.org/doi/10.1126/scitranslmed.adg9786",
+      "categories": "基因治疗,血液疾病",
+      "phase": "I/II期"
+    }
+  ],
+  "industry_news": [
+    {
+      "title": "辉瑞宣布收购新兴生物技术公司Seagen，扩大肿瘤学产品线",
+      "company": "辉瑞（Pfizer）",
+      "date": "2025-05-16",
+      "abstract": "Pfizer Inc. today announced that it has completed...",
+      "summary": "辉瑞(Pfizer)今日宣布已完成对Seagen的收购...",
+      "source": "https://www.pfizer.com/news/press-release/press-release-detail/pfizer-completes-acquisition-seagen",
+      "categories": "收购,肿瘤学,药物研发"
+    }
+  ]
+}
