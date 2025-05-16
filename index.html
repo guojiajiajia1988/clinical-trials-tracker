@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全球临床试验跟踪雷达</title>
     <style>
-        /* 您的原始CSS样式保持不变 */
         body {
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
             margin: 0;
@@ -219,17 +218,6 @@
             margin-bottom: 20px;
             color: #7f8c8d;
         }
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .meta-info {
-                flex-direction: column;
-                gap: 5px;
-            }
-        }
-        
         .api-toggle {
             display: flex;
             justify-content: center;
@@ -251,6 +239,16 @@
         }
         .api-toggle button:last-child {
             border-radius: 0 4px 4px 0;
+        }
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .meta-info {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 </head>
@@ -304,11 +302,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 配置Sheet2API接口
-            const API_CONFIG = {
-                // 这里替换为您获得的Sheet2API URLs
-                clinical_trials: 'https://sheet2api.com/v1/YOUR_API_KEY/clinical_trial_radar/clinical_trials',
-                industry_news: 'https://sheet2api.com/v1/YOUR_API_KEY/clinical_trial_radar/industry_news'
-            };
+            const API_BASE = 'https://sheet2api.com/v1/7WpeeK8CRxOg/clinical-trial-tracker';
             
             // 当前数据模式: 'api' 或 'local'
             let currentMode = 'api';
@@ -389,7 +383,7 @@
                 if (currentMode === 'api') {
                     // 使用API数据
                     // 获取临床试验数据
-                    fetch(API_CONFIG.clinical_trials)
+                    fetch(`${API_BASE}/clinical_trials`)
                         .then(response => response.json())
                         .then(allTrials => {
                             // 手动过滤日期
@@ -401,7 +395,7 @@
                             loadTrialData(filteredTrials, 'clinical-trials');
                             
                             // 获取行业进展数据
-                            return fetch(API_CONFIG.industry_news);
+                            return fetch(`${API_BASE}/industry_news`);
                         })
                         .then(response => response.json())
                         .then(allNews => {
